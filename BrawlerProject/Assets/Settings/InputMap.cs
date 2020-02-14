@@ -33,6 +33,14 @@ public class @InputMap : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Lock"",
+                    ""type"": ""Button"",
+                    ""id"": ""8288f597-3bc8-4a9f-abb4-12d2ae228a6b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -112,6 +120,28 @@ public class @InputMap : IInputActionCollection, IDisposable
                     ""action"": ""CameraMovement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8bdb760f-2bfd-4418-9847-6930e278e8a8"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard & Mouse"",
+                    ""action"": ""CameraMovement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b064da26-68b1-4fa9-9ed4-c616964964bc"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Lock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -133,6 +163,7 @@ public class @InputMap : IInputActionCollection, IDisposable
         m_InGame = asset.FindActionMap("InGame", throwIfNotFound: true);
         m_InGame_Movement = m_InGame.FindAction("Movement", throwIfNotFound: true);
         m_InGame_CameraMovement = m_InGame.FindAction("CameraMovement", throwIfNotFound: true);
+        m_InGame_Lock = m_InGame.FindAction("Lock", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -184,12 +215,14 @@ public class @InputMap : IInputActionCollection, IDisposable
     private IInGameActions m_InGameActionsCallbackInterface;
     private readonly InputAction m_InGame_Movement;
     private readonly InputAction m_InGame_CameraMovement;
+    private readonly InputAction m_InGame_Lock;
     public struct InGameActions
     {
         private @InputMap m_Wrapper;
         public InGameActions(@InputMap wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_InGame_Movement;
         public InputAction @CameraMovement => m_Wrapper.m_InGame_CameraMovement;
+        public InputAction @Lock => m_Wrapper.m_InGame_Lock;
         public InputActionMap Get() { return m_Wrapper.m_InGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -205,6 +238,9 @@ public class @InputMap : IInputActionCollection, IDisposable
                 @CameraMovement.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraMovement;
                 @CameraMovement.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraMovement;
                 @CameraMovement.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnCameraMovement;
+                @Lock.started -= m_Wrapper.m_InGameActionsCallbackInterface.OnLock;
+                @Lock.performed -= m_Wrapper.m_InGameActionsCallbackInterface.OnLock;
+                @Lock.canceled -= m_Wrapper.m_InGameActionsCallbackInterface.OnLock;
             }
             m_Wrapper.m_InGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -215,6 +251,9 @@ public class @InputMap : IInputActionCollection, IDisposable
                 @CameraMovement.started += instance.OnCameraMovement;
                 @CameraMovement.performed += instance.OnCameraMovement;
                 @CameraMovement.canceled += instance.OnCameraMovement;
+                @Lock.started += instance.OnLock;
+                @Lock.performed += instance.OnLock;
+                @Lock.canceled += instance.OnLock;
             }
         }
     }
@@ -241,5 +280,6 @@ public class @InputMap : IInputActionCollection, IDisposable
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnCameraMovement(InputAction.CallbackContext context);
+        void OnLock(InputAction.CallbackContext context);
     }
 }
